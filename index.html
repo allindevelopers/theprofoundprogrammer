@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Profound Programmer</title>
+    <style>
+        :root {
+            --bg-color: #1e1e2e;
+            --text-color: #cdd6f4;
+            --header-color: #f38ba8;
+            --card-bg: #313244;
+            --hover-color: #89b4fa;
+            --modal-bg: rgba(30, 30, 46, 0.9);
+            --button-color: #74c7ec;
+        }
+        
+        body {
+            font-family: 'Fira Code', monospace, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: #11111b;
+            color: var(--header-color);
+            text-align: center;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        header p {
+            margin: 1rem 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .binary-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.05;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .image-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            padding-top: 75%; /* 4:3 Aspect Ratio */
+        }
+        
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 0.3s ease;
+        }
+        
+        .image-card:hover .image-container img {
+            filter: brightness(50%);
+        }
+        
+        .image-description {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .image-card:hover .image-description {
+            opacity: 1;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--modal-bg);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .modal-img {
+            max-width: 100%;
+            max-height: 70vh;
+            margin: 0 auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        
+        .modal-desc {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--button-color);
+            color: #1e1e2e;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .close-btn:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .no-images {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+        
+        @media (max-width: 768px) {
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .modal-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="binary-bg" id="binaryBg"></div>
+        <h1>The Profound Programmer</h1>
+        <p>Where code meets comedy</p>
+    </header>
+    
+    <div class="container">
+        <div id="loading" class="loading">Loading programming wisdom...</div>
+        <div id="imageGrid" class="image-grid"></div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button id="closeModal" class="close-btn">×</button>
+            <img id="modalImg" class="modal-img" src="" alt="Programming humor">
+            <div id="modalDesc" class="modal-desc"></div>
+        </div>
+    </div>
+    
+    <script src="image-list.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const binaryBg = document.getElementById('binaryBg');
+            generateBinaryBackground();
+            
+            // Fetch and display images
+            loadImages();
+            
+            // Set up modal functionality
+            setupModal();
+            
+            function generateBinaryBackground() {
+                let binary = '';
+                for (let i = 0; i < 1000; i++) {
+                    binary += Math.round(Math.random()) + ' ';
+                }
+                binaryBg.textContent = binary;
+            }
+            
+            async function loadImages() {
+                try {
+                    // Check if imageList exists (should be loaded from image-list.js)
+                    if (typeof imageList === 'undefined') {
+                        document.getElementById('loading').innerHTML = 
+                            'Error: imageList variable not found.<br>' +
+                            'Please run <code>node generate-image-list.js</code> first to generate the image list.';
+                        return;
+                    }
+                    
+                    if (imageList.length === 0) {
+                        document.getElementById('loading').textContent = 'No images found in the downloaded_images folder.';
+                        return;
+                    }
+                    
+                    // Process and display all images
+                    await displayImages(imageList);
+                    
+                } catch (error) {
+                    console.error('Error loading images:', error);
+                    document.getElementById('loading').textContent = 'Failed to load images. Please try again later.';
+                }
+            }
+            
+            async function fetchImageDescription(txtPath) {
+                try {
+                    const response = await fetch(txtPath);
+                    return await response.text();
+                } catch (error) {
+                    console.error('Error fetching description:', error);
+                    return 'Description unavailable';
+                }
+            }
+            
+            async function displayImages(images) {
+                const imageGrid = document.getElementById('imageGrid');
+                const loadingElement = document.getElementById('loading');
+                
+                // We'll show the loading element until all descriptions are loaded
+                
+                // Create a promise for each image to load its description
+                const imagePromises = images.map(async (imageData) => {
+                    try {
+                        // Fetch the description from the corresponding txt file
+                        const description = await fetchImageDescription(imageData.description);
+                        
+                        const card = document.createElement('div');
+                        card.className = 'image-card';
+                        
+                        card.innerHTML = `
+                            <div class="image-container">
+                                <img src="${imageData.image}" alt="Programming humor" loading="lazy">
+                                <div class="image-description">${description}</div>
+                            </div>
+                        `;
+                        
+                        card.addEventListener('click', () => {
+                            openModal(imageData.image, description);
+                        });
+                        
+                        return card;
+                    } catch (error) {
+                        console.error(`Error processing image ${imageData.img}:`, error);
+                        return null;
+                    }
+                });
+                
+                // Wait for all images to process
+                const imageCards = await Promise.all(imagePromises);
+                
+                // Now hide loading and display all images
+                loadingElement.style.display = 'none';
+                
+                // Filter out any null cards (from errors) and append all cards to the grid
+                imageCards.filter(card => card !== null).forEach(card => {
+                    imageGrid.appendChild(card);
+                });
+                
+                // If we have no valid images, show a message
+                if (imageGrid.children.length === 0) {
+                    imageGrid.innerHTML = '<div class="no-images">No valid images found in the downloaded_images folder.</div>';
+                }
+            }
+            
+            function setupModal() {
+                const modal = document.getElementById('modal');
+                const closeBtn = document.getElementById('closeModal');
+                
+                closeBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                });
+                
+                window.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+                
+                // Close modal with escape key
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && modal.style.display === 'flex') {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+            
+            function openModal(imgSrc, description) {
+                const modal = document.getElementById('modal');
+                const modalImg = document.getElementById('modalImg');
+                const modalDesc = document.getElementById('modalDesc');
+                
+                modalImg.src = imgSrc;
+                modalDesc.textContent = description;
+                
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        });
+        // This implementation uses the image-list.js file generated by generate-image-list.js
+        // Make sure to run: node generate-image-list.js before loading this page
+    </script>
+</body>
+</html>
+
