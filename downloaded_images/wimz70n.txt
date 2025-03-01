@@ -1,0 +1,1 @@
+[Photograph of what happens when you forget the trailing semicolon on a C++ class declaration.]

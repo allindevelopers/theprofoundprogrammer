@@ -1,0 +1,1 @@
+[text: “but it worked on my machine”, photograph of Dolphin failing to run in an environment it hasn’t been compiled for]

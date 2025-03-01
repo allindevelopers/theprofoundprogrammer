@@ -1,0 +1,1 @@
+[text: “BufferedReader reader = new BufferedReader( new InputStreamReader( new FileInputStream("filename.txt”)));“, cut off ; photograph of Amazonian deforestation]

@@ -1,0 +1,1 @@
+[text: “we don’t "need" jquery I wish you were dead”, photograph of a future where $.animate defaults to CSS3 animations without a plugin, even in IE]
